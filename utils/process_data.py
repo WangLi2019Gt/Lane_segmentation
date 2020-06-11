@@ -20,7 +20,7 @@ def train_data_generator(imgs, labels, batch_size, img_size, crop_offset):
     while True:
         np.random.shuffle(batch_index)
         for i in batch_index:
-            if os.path.exist(imgs[i]):
+            if os.path.exists(imgs[i]):
                 img = cv2.imread(imgs[i])
                 label = cv2.imread(labels[i], cv2.IMREAD_GRAYSCALE)
 
@@ -33,7 +33,8 @@ def train_data_generator(imgs, labels, batch_size, img_size, crop_offset):
                 if len(img_out)>=batch_size:
                     img_out=torch.from_numpy(np.array(img_out))
                     label_out=torch.from_numpy(np.array(label_out))
-                    img_out=img_out[:, :, :, ::-1].transpose(0, 3, 1, 2).float() / (255.0 / 2) - 1
+                    img_out=img_out.permute(0, 3, 1, 2).float() / (255.0 / 2) - 1
+                    #img_out = img_out.float()
                     label_out = label_out.long()
                     yield img_out, label_out
                     img_out, label_out=[], []

@@ -7,8 +7,8 @@ class ConfigTrain(object):
         self.NET_NAME='deeplab'
         self.WEIGHTS=None
         self.IN_CHANNEL=3
-        self.NUM_CLASSES = 3
-        self.BASE_LR=0.001
+        self.NUM_CLASSES = 8
+        self.BASE_LR=0.006
         self.DATA_LIST_DIR='./data_list'
         self.LOSS = 'ce'
         self.BATCH_SIZE=2
