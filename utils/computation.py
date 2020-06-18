@@ -8,7 +8,7 @@ def onehot_encoder(label, num_classes):
     shape[1]=num_classes
     shape=tuple(shape)
     one_hot=torch.zeros(shape)
-    one_hot=one_hot.scatter(1,label,1)
+    one_hot=one_hot.scatter(1,label.cpu(),1)
     return one_hot
 
 def compute_miou(predict, label, num_classes):
