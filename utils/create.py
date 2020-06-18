@@ -1,5 +1,6 @@
 from net import deeplab
 import torch.nn.functional as F
+from utils.computation import *
 
 
 def create_net(in_channels, num_classes, net_name):
@@ -15,5 +16,8 @@ def create_loss(predicts, labels, num_classes):
 
     predicts = predicts.permute((0, 2, 3, 1)).reshape((-1,num_classes))
     bce_loss = F.cross_entropy(predicts, labels.flatten(), reduction='mean')
-    loss = bce_loss
-    return loss
+    one_hot_label=onehot_encoder(labels.reshape((-1,1)),num_classes).to(labels.device)
+    loss = bce_loss+DiceLoss()(predicts,one_hot_label)
+    miou = compute_miou(predicts,labels.reshape((-1,1)),num_classes)
+    return loss, miou
+
