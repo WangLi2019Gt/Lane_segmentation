@@ -122,7 +122,7 @@ class SEResNeXt(nn.Module):
             )
 
         layers = []
-        layers.append(block(self.inplanes, planes, stride, dilation, downsample, norm_layer))  # 第一个block单独处理
+        layers.append(block(self.inplanes, planes,self.groups,self.base_width, stride, dilation, downsample, norm_layer,self.SE))  # 第一个block单独处理
         self.inplanes = planes * block.expansion  # 记录layerN的channel变化，具体请看ppt resnet表格
         for _ in range(1, blocks):  # 从1开始循环，因为第一个模块前面已经单独处理
             layers.append(block(self.inplanes, planes, groups=self.groups,
@@ -140,13 +140,13 @@ class SEResNeXt(nn.Module):
             )
 
         layers = []
-        layers.append(block(self.inplanes, planes, stride, dilation=blocks[0] * dilation,
+        layers.append(block(self.inplanes, planes,self.groups,self.base_width, stride, dilation=blocks[0] * dilation,
                             downsample=downsample, norm_layer=norm_layer,SE=self.SE))
         self.inplanes = planes * block.expansion
         for i in range(1, len(blocks)):
             layers.append(block(self.inplanes, planes, groups=self.groups,
                                 base_width=self.base_width,stride=1,
-                                dilation=blocks[i] * dilation, norm_layer=norm_layer))
+                                dilation=blocks[i] * dilation, norm_layer=norm_layer,SE=self.SE))
 
         return nn.Sequential(*layers)
 
@@ -178,7 +178,7 @@ def _resnet(arch, block, layers, output_stride, pretrained, progress, **kwargs):
 
     model = SEResNeXt(block, layers, output_stride, **kwargs)
     if pretrained:
-        pretrain_dict = model_zoo.load_url('https://download.pytorch.org/models/resnext101_32x8d-8ba56ff5.pth')
+        pretrain_dict = model_zoo.load_url('http://data.lip6.fr/cadene/pretrainedmodels/resnext101_32x4d-29e315fa.pth')
         model_dict = {}
         state_dict = model.state_dict()
         for k, v in pretrain_dict.items():
@@ -215,5 +215,6 @@ def SEresneXt101_32_4d(output_stride, pretrained=True, progress=True, **kwargs):
                    **kwargs)
 
 if __name__ == '__main__':
-    model = resneXt101_32_8d(16,pretrained=False)
-    model.eval()
+    model = SEresneXt101_32_4d(16,pretrained=True)
+    print(model.eval())
+    
