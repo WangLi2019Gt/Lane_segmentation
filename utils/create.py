@@ -3,10 +3,13 @@ import torch.nn.functional as F
 from utils.computation import *
 
 
-def create_net(in_channels, num_classes, net_name):
+def create_net(in_channels, num_classes, net_name,backbone=None):
 
     if net_name == 'deeplab':
-        network = deeplab.DeepLab(num_classes=num_classes)
+        if backbone:
+            network = deeplab.DeepLab(backbone=backbone,num_classes=num_classes)
+        else:
+            network = deeplab.DeepLab(num_classes=num_classes)
     else:
         raise ValueError('Not supported Net_name: {}'.format(net_name))
     return network

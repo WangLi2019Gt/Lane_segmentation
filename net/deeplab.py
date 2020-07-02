@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import math
+from net.se_resnext import resneXt101_32_8d, SEresneXt101_32_4d
 from torch.hub import load_state_dict_from_url
 import torch.utils.model_zoo as model_zoo
 import torch.nn.functional as F

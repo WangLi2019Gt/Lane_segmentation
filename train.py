@@ -12,7 +12,8 @@ if __name__ == '__main__':
     device = torch.device(cfg.DEVICE)
 
     print("Net: ", cfg.NET_NAME)
-    net = utils.create_net(cfg.IN_CHANNEL, cfg.NUM_CLASSES, cfg.NET_NAME).cuda()
+    #net = utils.create_net(cfg.IN_CHANNEL, cfg.NUM_CLASSES, cfg.NET_NAME).cuda()
+    net = utils.create_net(cfg.IN_CHANNEL, cfg.NUM_CLASSES, cfg.NET_NAME, cfg.BACKBONE).cuda()
     if cfg.WEIGHTS:
         print('load weights from: ', cfg.WEIGHTS)
         net.load_state_dict_from_url(torch.load(cfg.WEIGHTS))
@@ -68,7 +69,7 @@ if __name__ == '__main__':
                 print("EVAL:[epoch-%d , iter-%d]  iter loss:%.3f  iter miou:%.3f  epoch_loss:%.3f  epoch_miou:%.3f" % (
                     epoch, iter, loss.item(), miou.item(), val_loss / iter, val_miou / iter))
 
-        torch.save(net.state_dict(),os.path.join(cfg.SAVE_DIR,"ep_%d_ls_%.3f.pth" % (epoch,epoch_loss/batch_num)))
+        torch.save(net.state_dict(),os.path.join(cfg.SAVE_DIR,"ep_%d_ls_%.3f_%.3f.pth" % (epoch,epoch_loss/batch_num,epoch_miou/batch_num)))
 
 
 
