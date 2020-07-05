@@ -1,58 +1,40 @@
 import numpy as np
 
 
-def encode_labels(color_mask):
+def encode_labels(labels):
 
-    encode_mask = np.zeros((color_mask.shape[0], color_mask.shape[1]))
-    # 0
-    encode_mask[color_mask == 0] = 0
-    encode_mask[color_mask == 249] = 0
-    encode_mask[color_mask == 255] = 0
+    """
+    将标签图的灰度值转换成类别id
+    注意：ignoreInEval为True的都当分类0处理
+    @param labels: 标签灰度图
+    """
+    encoded_labels = np.zeros_like(labels)
+    # 除了下面特意转换的，其余都属于类别0
     # 1
-    encode_mask[color_mask == 200] = 1
-    encode_mask[color_mask == 204] = 1
-    encode_mask[color_mask == 213] = 0
-    encode_mask[color_mask == 209] = 1
-    encode_mask[color_mask == 206] = 0
-    encode_mask[color_mask == 207] = 0
+    encoded_labels[labels == 200] = 1
+    encoded_labels[labels == 204] = 1
+    encoded_labels[labels == 209] = 1
     # 2
-    encode_mask[color_mask == 201] = 2
-    encode_mask[color_mask == 203] = 2
-    encode_mask[color_mask == 211] = 0
-    encode_mask[color_mask == 208] = 0
+    encoded_labels[labels == 201] = 2
+    encoded_labels[labels == 203] = 2
     # 3
-    encode_mask[color_mask == 216] = 0
-    encode_mask[color_mask == 217] = 3
-    encode_mask[color_mask == 215] = 0
-    # 4 In the test, it will be ignored
-    encode_mask[color_mask == 218] = 0
-    encode_mask[color_mask == 219] = 0
+    encoded_labels[labels == 217] = 3
     # 4
-    encode_mask[color_mask == 210] = 4
-    encode_mask[color_mask == 232] = 0
+    encoded_labels[labels == 210] = 4
     # 5
-    encode_mask[color_mask == 214] = 5
+    encoded_labels[labels == 214] = 5
     # 6
-    encode_mask[color_mask == 202] = 0
-    encode_mask[color_mask == 220] = 6
-    encode_mask[color_mask == 221] = 6
-    encode_mask[color_mask == 222] = 6
-    encode_mask[color_mask == 231] = 0
-    encode_mask[color_mask == 224] = 6
-    encode_mask[color_mask == 225] = 6
-    encode_mask[color_mask == 226] = 6
-    encode_mask[color_mask == 230] = 0
-    encode_mask[color_mask == 228] = 0
-    encode_mask[color_mask == 229] = 0
-    encode_mask[color_mask == 233] = 0
+    encoded_labels[labels == 220] = 6
+    encoded_labels[labels == 221] = 6
+    encoded_labels[labels == 222] = 6
+    encoded_labels[labels == 224] = 6
+    encoded_labels[labels == 225] = 6
+    encoded_labels[labels == 226] = 6
     # 7
-    encode_mask[color_mask == 205] = 7
-    encode_mask[color_mask == 212] = 0
-    encode_mask[color_mask == 227] = 7
-    encode_mask[color_mask == 223] = 0
-    encode_mask[color_mask == 250] = 7
-
-    return encode_mask
+    encoded_labels[labels == 205] = 7
+    encoded_labels[labels == 227] = 7
+    encoded_labels[labels == 250] = 7
+    return encoded_labels
 
 
 def decode_labels(labels):

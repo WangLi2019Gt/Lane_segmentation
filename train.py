@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     print("Net: ", cfg.NET_NAME)
     #net = utils.create_net(cfg.IN_CHANNEL, cfg.NUM_CLASSES, cfg.NET_NAME).cuda()
-    net = utils.create_net(cfg.IN_CHANNEL, cfg.NUM_CLASSES, cfg.NET_NAME, cfg.BACKBONE).cuda()
+    net = utils.create_net(cfg.IN_CHANNEL, cfg.NUM_CLASSES, cfg.NET_NAME, cfg.BACKBONE).to(device)
     if cfg.WEIGHTS:
         print('load weights from: ', cfg.WEIGHTS)
         net.load_state_dict_from_url(torch.load(cfg.WEIGHTS))
@@ -30,16 +30,18 @@ if __name__ == '__main__':
                                                 cfg.BATCH_SIZE, cfg.IMG_SIZE, cfg.CROP_OFFSET)
     print('Begin training...')
     log_iter=1
-    batch_num=int(len(df_train)/cfg.BATCH_SIZE)
+    epoch_size=int(len(df_train)/cfg.BATCH_SIZE)
     for epoch in range(cfg.EPOCH_BEGIN,cfg.EPOCH_NUM):
         epoch_loss=0.0
         epoch_miou = 0.0
         last_epoch_loss=0.0
         net.train()
-        for iter in range(1,batch_num+1):
+        for iter in range(1,epoch_size+1):
             imgs, labels= next(data_generator)
             imgs = imgs.to(device)
             labels = labels.to(device)
+
+            lr = utils.ajust_learning_rate(optimizer, cfg.LR_STRATEGY, epoch, iter - 1, epoch_size)
 
             predicts = net(imgs)
             optimizer.zero_grad()
@@ -57,7 +59,7 @@ if __name__ == '__main__':
         val_miou = 0.0
         net.eval()
         with torch.no_grad():
-            for iter in range(1, batch_num + 1):
+            for iter in range(1, epoch_size + 1):
                 imgs, labels = next(val_data_generator)
                 imgs = imgs.to(device)
                 labels = labels.to(device)
@@ -69,7 +71,7 @@ if __name__ == '__main__':
                 print("EVAL:[epoch-%d , iter-%d]  iter loss:%.3f  iter miou:%.3f  epoch_loss:%.3f  epoch_miou:%.3f" % (
                     epoch, iter, loss.item(), miou.item(), val_loss / iter, val_miou / iter))
 
-        torch.save(net.state_dict(),os.path.join(cfg.SAVE_DIR,"ep_%d_ls_%.3f_%.3f.pth" % (epoch,epoch_loss/batch_num,epoch_miou/batch_num)))
+        torch.save(net.state_dict(),os.path.join(cfg.SAVE_DIR,"ep_%d_ls_%.3f_%.3f.pth" % (epoch,epoch_loss/epoch_size,epoch_miou/epoch_size)))
 
 
 

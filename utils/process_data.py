@@ -35,6 +35,7 @@ def train_data_generator(imgs, labels=None, batch_size=2, img_size=(1024, 384), 
                 filep.append(imgs[i])
                 if len(img_out)>=batch_size:
                     img_out=torch.from_numpy(np.array(img_out))
+                    img_out = img_out[:, :, :, ::-1]
                     img_out = img_out.permute(0, 3, 1, 2).float() / (255.0 / 2) - 1
                     if labels:
                         label_out=torch.from_numpy(np.array(label_out))

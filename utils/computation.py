@@ -21,6 +21,7 @@ def compute_miou(predict, label, num_classes):
         ious[i]=inter/(area+1e-6)
     return torch.mean(ious)
 
+
 class BinaryDiceLoss(nn.Module):
     """Dice loss of binary class
     Args:
@@ -35,7 +36,7 @@ class BinaryDiceLoss(nn.Module):
     Raise:
         Exception if unexpected reduction
     """
-    def __init__(self, smooth=1, p=1, reduction='mean'):
+    def __init__(self, smooth=1, p=2, reduction='mean'):
         super(BinaryDiceLoss, self).__init__()
         self.smooth = smooth
         self.p = p
@@ -43,11 +44,9 @@ class BinaryDiceLoss(nn.Module):
 
     def forward(self, predict, target):
         assert predict.shape[0] == target.shape[0], "predict & target batch size don't match"
-        N = predict.shape[0]
-        predict = predict.contiguous().view(N, -1)
-        target = target.contiguous().view(N, -1)
-
-        num = torch.sum(torch.mul(predict, target), dim=1) + self.smooth
+        predict = predict.contiguous().view(predict.shape[0], -1)
+        target = target.contiguous().view(target.shape[0], -1)
+        num = 2*torch.sum(torch.mul(predict, target), dim=1) + self.smooth
         den = torch.sum(predict.pow(self.p) + target.pow(self.p), dim=1) + self.smooth
 
         loss = 1 - num / den

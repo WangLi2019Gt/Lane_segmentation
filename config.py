@@ -11,16 +11,27 @@ class ConfigTrain(object):
         self.WEIGHTS=None
         self.IN_CHANNEL=3
         self.NUM_CLASSES = 8
-        self.BASE_LR=0.006
+        self.BASE_LR=0.001
+        self.LR_STRATEGY = [
+            [0.001],  # epoch 0
+            [0.001],  # epoch 1
+            [0.001],  # epoch 2
+            [0.001, 0.0006, 0.0003, 0.0001, 0.0004, 0.0008, 0.001],  # epoch 3
+            [0.001, 0.0006, 0.0003, 0.0001, 0.0004, 0.0008, 0.001],  # epoch 4
+            [0.001, 0.0006, 0.0003, 0.0001, 0.0004, 0.0008, 0.001],  # epoch 5
+            [0.0004, 0.0003, 0.0002, 0.0001, 0.0002, 0.0003, 0.0004],  # epoch 6
+            [0.0004, 0.0003, 0.0002, 0.0001, 0.0002, 0.0003, 0.0004],  # epoch 7
+        ]
         self.DATA_LIST_DIR='./data_list'
-        self.LOSS = 'ce'
-        self.BATCH_SIZE=2
-        self.IMG_SIZE=(1024,384)
+
+        self.BATCH_SIZE=8#8,4,2
+
+        self.IMG_SIZE= (768, 256)#(768, 256)#(1024, 384) #(1536, 512)
         self.CROP_OFFSET=690
 
         self.LOG_DIR='./logs'
         self.EPOCH_BEGIN=0
-        self.EPOCH_NUM=10
+        self.EPOCH_NUM=8
         self.SAVE_DIR='./weights'
 
 class ConfigTest(object):
