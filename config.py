@@ -44,7 +44,7 @@ class ConfigTest(object):
         self.SAVE_DIR = './weights'
         self.IMAGE_SIZE_ORG = (3384, 1710)
         self.PROJECT_ROOT = dirname(abspath(__file__))
-        self.DATA_ROOT = pjoin(self.PROJECT_ROOT, 'data')
+        self.DATA_ROOT = pjoin(self.PROJECT_ROOT, 'test')
         self.IMAGE_ROOT = pjoin(self.DATA_ROOT, 'TestImage')
-        self.LABEL_ROOT = pjoin(self.DATA_ROOT, 'TestLabel')
-        self.OVERLAY_ROOT = pjoin(self.DATA_ROOT, 'TestOverlay')
+        self.LABEL_ROOT = pjoin(self.DATA_ROOT, 'label')
+        self.OVERLAY_ROOT = pjoin(self.DATA_ROOT, 'overlay')

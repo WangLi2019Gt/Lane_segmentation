@@ -14,7 +14,8 @@ if __name__ == '__main__':
 
     print("Net: ", cfg.NET_NAME)
     #net = utils.create_net(cfg.IN_CHANNEL, cfg.NUM_CLASSES, cfg.NET_NAME).cuda()
-    net = utils.create_net(cfg.IN_CHANNEL, cfg.NUM_CLASSES, cfg.NET_NAME, cfg.BACKBONE).cuda()
+    net = utils.create_net(cfg.IN_CHANNEL, cfg.NUM_CLASSES, cfg.NET_NAME, cfg.BACKBONE).to(device)
+    net.eval()
     if cfg.WEIGHTS:
         print('load weights from: ', cfg.WEIGHTS)
         net.load_state_dict_from_url(torch.load(cfg.WEIGHTS))
@@ -31,20 +32,24 @@ if __name__ == '__main__':
     print('Begin infenrence...')
     done_num=0
     while True:
-        imgs,file = next(data_generator)
+        imgs,filep = next(data_generator)
         if imgs is None:
             break
         imgs = imgs.to(device)
         predicts = net(imgs).cpu().detach().numpy()
-        outs = utils.decodePredicts(predicts, cfg.IMAGE_SIZE_ORG, cfg.CROP_OFFSET, mode='grey')
+        outs = utils.process_data.decodePredicts(predicts, cfg.IMAGE_SIZE_ORG, cfg.CROP_OFFSET, mode='gray')
 
         # 保存
         for i, out in enumerate(outs):
-            cv2.imwrite(pjoin(cfg.LABEL_ROOT, file[i].split("/")[-1].replace('.jpg', '_bin.png')), out)
-            org_image = cv2.imread(pjoin(cfg.IMAGE_ROOT, file[i].split("/")[-1]))
+            cv2.imwrite(pjoin(cfg.LABEL_ROOT, (filep[i].split("/")[-1]).replace('.jpg', '_bin.png')), out)
+            org_image = cv2.imread( filep[i],cv2.IMREAD_GRAYSCALE)
             overlay_image = cv2.addWeighted(org_image, 0.6, out, 0.4, gamma=0)
-            cv2.imwrite(pjoin(cfg.OVERLAY_ROOT, file[i].split("/")[-1].replace('.jpg', '.png')), overlay_image)
-
+            print(overlay_image.shape)
+            print(overlay_image[0])
+            if not os.path.exists(cfg.OVERLAY_ROOT):
+                os.makedirs(cfg.OVERLAY_ROOT)
+            cv2.imwrite(pjoin(cfg.OVERLAY_ROOT, (filep[i].split("/")[-1]).replace('.jpg', '.png')), overlay_image)
+            #print(pjoin(cfg.OVERLAY_ROOT, filep[i].split("/")[-1].replace('.jpg', '.png')))
         done_num += imgs.shape[0]
         print('Finished {} images'.format(done_num))
 

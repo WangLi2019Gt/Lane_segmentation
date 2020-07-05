@@ -31,10 +31,10 @@ assert len(img_list) == len(lab_list)
 all = pd.DataFrame({'image': img_list, 'label':lab_list})
 all_shuffle = shuffle(all)
 
-#sixth_part = int(len(img_list) * 0.6)
-#eighth_part = int(len(img_list) * 0.8)
-sixth_part = int(120)
-eighth_part=int(160)
+sixth_part = int(len(img_list) * 0.6)
+eighth_part = int(len(img_list) * 0.8)
+#sixth_part = int(120)
+#eighth_part=int(160)
 
 train_dataset = all_shuffle[:sixth_part]
 val_dataset = all_shuffle[sixth_part:eighth_part]

@@ -14,17 +14,17 @@ def crop_resize(img, label=None, img_size=(1024,384), crop_offset=690):
     else:
         return train_img
 def train_data_generator(imgs, labels=None, batch_size=2, img_size=(1024, 384), crop_offset=690,file_path=False):
-    batch_index = np.arange(0, len(labels))
+    batch_index = np.arange(0, imgs.shape[0])
     img_out=[]
-    file=[]
-    if not labels:
+    filep=[]
+    if labels is not None:
         label_out=[]
     while True:
         np.random.shuffle(batch_index)
         for i in batch_index:
             if os.path.exists(imgs[i]):
                 img = cv2.imread(imgs[i])
-                if not labels:
+                if  labels:
                     label = cv2.imread(labels[i], cv2.IMREAD_GRAYSCALE)
                     train_img, train_label= crop_resize(img, label, img_size, crop_offset)
                     train_label = lp.encode_labels(train_label)
@@ -32,26 +32,26 @@ def train_data_generator(imgs, labels=None, batch_size=2, img_size=(1024, 384), 
                 else:
                     train_img= crop_resize(img, None, img_size, crop_offset)
                 img_out.append(train_img)
-                file.append(imgs[i])
+                filep.append(imgs[i])
                 if len(img_out)>=batch_size:
                     img_out=torch.from_numpy(np.array(img_out))
                     img_out = img_out.permute(0, 3, 1, 2).float() / (255.0 / 2) - 1
-                    if not labels:
+                    if labels:
                         label_out=torch.from_numpy(np.array(label_out))
                         label_out = label_out.long()
                         yield img_out, label_out
                         img_out, label_out=[], []
                     elif file_path:
-                        yield img_out, file
+                        yield img_out, filep
                         img_out=[]
-                        file=[]
+                        filep=[]
                     else:
                         yield img_out
                         img_out = []
             else:
                 print(imgs[i], 'not exist')
 
-def decodePredicts(predicts, out_size, height_pad_offset, mode='grey'):
+def decodePredicts(predicts, out_size, height_pad_offset, mode='gray'):
     """
     将推断的结果恢复成图片
     @param predicts: shape=(n, c, h, w)
@@ -71,7 +71,8 @@ def decodePredicts(predicts, out_size, height_pad_offset, mode='grey'):
         c = 3
     elif mode == 'gray':
         predicts = lp.decode_labels(predicts)
-        predicts.reshape((n, 1, h, w))
+        predicts=predicts.reshape((n, 1, h, w))
+        print(predicts.shape)
         predicts = predicts.transpose((0, 2, 3, 1)) # to (n, h, w, c)
         c = 1
     else:
@@ -81,7 +82,7 @@ def decodePredicts(predicts, out_size, height_pad_offset, mode='grey'):
     dsize = (out_size[0], out_size[1]-height_pad_offset)
     outs = []
     for i in range(n):
-        out = np.zeros((out_size[1], out_size[0], c), dtype=np.uint8)
+        out = np.zeros((out_size[1], out_size[0]), dtype=np.uint8)
         out[height_pad_offset:] = cv2.resize(predicts[i], dsize, interpolation=cv2.INTER_NEAREST)  # label
         outs.append(out)
     return outs
