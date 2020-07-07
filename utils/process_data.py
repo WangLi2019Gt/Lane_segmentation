@@ -24,7 +24,7 @@ def train_data_generator(imgs, labels=None, batch_size=2, img_size=(1024, 384), 
         for i in batch_index:
             if os.path.exists(imgs[i]):
                 img = cv2.imread(imgs[i])
-                if  labels:
+                if  labels is not None:
                     label = cv2.imread(labels[i], cv2.IMREAD_GRAYSCALE)
                     train_img, train_label= crop_resize(img, label, img_size, crop_offset)
                     train_label = lp.encode_labels(train_label)
@@ -34,10 +34,12 @@ def train_data_generator(imgs, labels=None, batch_size=2, img_size=(1024, 384), 
                 img_out.append(train_img)
                 filep.append(imgs[i])
                 if len(img_out)>=batch_size:
-                    img_out=torch.from_numpy(np.array(img_out))
+                    img_out = np.array(img_out, dtype=np.float32)
                     img_out = img_out[:, :, :, ::-1]
+                    img_out=torch.from_numpy(np.array(img_out))
                     img_out = img_out.permute(0, 3, 1, 2).float() / (255.0 / 2) - 1
-                    if labels:
+                    if labels is not None:
+                        label_out = np.array(label_out, dtype=np.int64)
                         label_out=torch.from_numpy(np.array(label_out))
                         label_out = label_out.long()
                         yield img_out, label_out

@@ -16,7 +16,7 @@ if __name__ == '__main__':
     net = utils.create_net(cfg.IN_CHANNEL, cfg.NUM_CLASSES, cfg.NET_NAME, cfg.BACKBONE).to(device)
     if cfg.WEIGHTS:
         print('load weights from: ', cfg.WEIGHTS)
-        net.load_state_dict_from_url(torch.load(cfg.WEIGHTS))
+        net.load_state_dict(torch.load(cfg.WEIGHTS))
     optimizer = torch.optim.Adam(net.parameters(), lr=cfg.BASE_LR)
     print('Prepare data...batch_size: {}, img_size: {}, crop_offset: {}'.format(cfg.BATCH_SIZE, cfg.IMG_SIZE, cfg.CROP_OFFSET))
     df_train = pd.read_csv(os.path.join(cfg.DATA_LIST_DIR,'train.csv'))

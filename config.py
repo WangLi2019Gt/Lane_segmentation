@@ -8,7 +8,7 @@ class ConfigTrain(object):
         self.DEVICE ='cuda:0'
         self.NET_NAME='deeplab'
         self.BACKBONE = net.se_resnext.SEresneXt101_32_4d(16)
-        self.WEIGHTS=None
+        self.WEIGHTS='/home/rogqigx171/Lane_segmentation/weights_1/ep_7_ls_0.021_0.570.pth'
         self.IN_CHANNEL=3
         self.NUM_CLASSES = 8
         self.BASE_LR=0.001
@@ -24,15 +24,15 @@ class ConfigTrain(object):
         ]
         self.DATA_LIST_DIR='./data_list'
 
-        self.BATCH_SIZE=8#8,4,2
+        self.BATCH_SIZE=2#8,4,2
 
-        self.IMG_SIZE= (768, 256)#(768, 256)#(1024, 384) #(1536, 512)
+        self.IMG_SIZE= (1536, 512)#(768, 256)#(1024, 384) #(1536, 512)
         self.CROP_OFFSET=690
 
         self.LOG_DIR='./logs'
         self.EPOCH_BEGIN=0
         self.EPOCH_NUM=8
-        self.SAVE_DIR='./weights'
+        self.SAVE_DIR='./weights_2'
 
 class ConfigTest(object):
     def __init__(self):
