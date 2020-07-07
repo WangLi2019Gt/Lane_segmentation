@@ -8,7 +8,8 @@ import torch.nn.functional as F
 def conv1x1(in_planes, out_planes, stride=1):
     return nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride,
                      bias=False)  # ? Why no bias: 如果卷积层之后是BN层，那么可以不用偏置参数，可以节省内存
-
+def GroupNorm(out_planes):
+    return nn.GroupNorm(32,out_planes)
 class SELayer(nn.Module):
     def __init__(self, channel, reduction=16):
         super(SELayer, self).__init__()
@@ -211,6 +212,20 @@ def SEresneXt101_32_4d(output_stride, pretrained=True, progress=True, **kwargs):
     kwargs['groups'] = 32
     kwargs['width_per_group'] = 4
     kwargs['SE'] = True
+    return _resnet('resneXt101_32_4d', SEBottleneck, [3, 4, 23, 3], output_stride, pretrained, progress,
+                   **kwargs)
+
+def SEresneXt101_32_4d_GN(output_stride, pretrained=True, progress=True, **kwargs):
+    r"""ResNet-152 model from
+    `"Deep Residual Learning for Image Recognition" <https://arxiv.org/pdf/1512.03385.pdf>`_
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+        progress (bool): If True, displays a progress bar of the download to stderr
+    """
+    kwargs['groups'] = 32
+    kwargs['width_per_group'] = 4
+    kwargs['SE'] = True
+    kwargs['norm_layer'] = GroupNorm
     return _resnet('resneXt101_32_4d', SEBottleneck, [3, 4, 23, 3], output_stride, pretrained, progress,
                    **kwargs)
 
