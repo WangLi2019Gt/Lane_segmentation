@@ -18,8 +18,7 @@ Cycle的分步学习率策略，ADAM作为优化器，训练8个EPOCH，以0.001
 | SE-ResneXt101_32_4d    | bce + dice     |   0.001 |4|1024 x 384|0.571|76.log|
 | SE-ResneXt101_32_4d  | bce + dice   |  0.001|2|1536 x 512|0.528|76_1.log|
 | SE-ResneXt101_32_4d_GN|   bce + dice       |   0.001 | 8 | 768 x 256        |    0.539 ||
-| SE-ResneXt101_32_4d_GN|   bce + dice       |    0.001 | 4 |1024 x 384	      |    0.558 |
-78_GN_1152_384.log |
+| SE-ResneXt101_32_4d_GN|   bce + dice       |    0.001 | 4 |1024 x 384	      |    0.558 |78_GN_1152_384.log |
 | SE-ResneXt101_32_4d_GN|  bce + dice  |    0.001 |2  |1536 x 512   | 0.526 |78_GN_1536_512.log|
 
 日志存在./logs文件夹中。
