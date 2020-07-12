@@ -31,6 +31,7 @@ if __name__ == '__main__':
     print('Begin training...')
     log_iter=1
     epoch_size=int(len(df_train)/cfg.BATCH_SIZE)
+    val_epoch_size=int(len(df_val)/cfg.BATCH_SIZE)
     for epoch in range(cfg.EPOCH_BEGIN,cfg.EPOCH_NUM):
         epoch_loss=0.0
         epoch_miou = 0.0
@@ -59,7 +60,7 @@ if __name__ == '__main__':
         val_miou = 0.0
         net.eval()
         with torch.no_grad():
-            for iter in range(1, epoch_size + 1):
+            for iter in range(1, val_epoch_size + 1):
                 imgs, labels = next(val_data_generator)
                 imgs = imgs.to(device)
                 labels = labels.to(device)
