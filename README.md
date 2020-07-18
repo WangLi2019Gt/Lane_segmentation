@@ -22,9 +22,7 @@ Cycle的分步学习率策略，ADAM作为优化器，训练8个EPOCH，以0.001
 | SE-ResneXt101_32_4d_GN|  bce + dice  |    0.001 |2  |1536 x 512   | 0.526 |78_GN_1536_512.log|
 
 日志存在./logs文件夹中。
-
 问题：分辨率增到1536x512后出现明显的性能下降，最初我认为是因为BATCHSIZE只有2，导致BN效果不好，换用了GN，结果没什么改观。
-
 我的训练策略是每次采用上一个分辨率最终的模型作为预加载的模型进行训练。是否因此而过拟合，但是日志中train miou和val miou基本差不多。下一步打算调整下学习率策略，并且简化模型或使用UNET进行尝试
 
 SE-ResneXt101_32_4d weights: https://drive.google.com/file/d/18S5r0ipPa0AqZzl-dY0_NM8ui4SsEPAF/view?usp=sharing
