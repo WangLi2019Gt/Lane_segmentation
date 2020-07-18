@@ -18,7 +18,7 @@ if __name__ == '__main__':
     net.eval()
     if cfg.WEIGHTS:
         print('load weights from: ', cfg.WEIGHTS)
-        net.load_state_dict_from_url(torch.load(cfg.WEIGHTS))
+        net.load_state_dict(torch.load(cfg.WEIGHTS))
     else:
         print("fuck, no weight")
     optimizer = torch.optim.Adam(net.parameters(), lr=cfg.BASE_LR)
@@ -44,8 +44,6 @@ if __name__ == '__main__':
             cv2.imwrite(pjoin(cfg.LABEL_ROOT, (filep[i].split("/")[-1]).replace('.jpg', '_bin.png')), out)
             org_image = cv2.imread( filep[i],cv2.IMREAD_GRAYSCALE)
             overlay_image = cv2.addWeighted(org_image, 0.6, out, 0.4, gamma=0)
-            print(overlay_image.shape)
-            print(overlay_image[0])
             if not os.path.exists(cfg.OVERLAY_ROOT):
                 os.makedirs(cfg.OVERLAY_ROOT)
             cv2.imwrite(pjoin(cfg.OVERLAY_ROOT, (filep[i].split("/")[-1]).replace('.jpg', '.png')), overlay_image)

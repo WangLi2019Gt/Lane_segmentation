@@ -47,7 +47,7 @@ class ConfigTest(object):
         self.DEVICE = 'cuda:0'
         self.NET_NAME = 'deeplab'
         self.BACKBONE = net.se_resnext.SEresneXt101_32_4d(16)
-        self.WEIGHTS = None
+        self.WEIGHTS = '/home/rogqigx171/Lane_segmentation/weights_1/ep_7_ls_0.021_0.570.pth'
         self.IN_CHANNEL = 3
         self.NUM_CLASSES = 8
         self.BASE_LR = 0.006
