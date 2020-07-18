@@ -31,3 +31,10 @@ SE-ResneXt101_32_4d weights: https://drive.google.com/file/d/18S5r0ipPa0AqZzl-dY
 ![Image text](https://raw.githubusercontent.com/WangLi2019Gt/Lane_segmentation/master/img/170927_064216654_Camera_6.jpg)
 
 ![Image text](https://raw.githubusercontent.com/WangLi2019Gt/Lane_segmentation/master/img/170927_064216654_Camera_6_bin.png)
+
+### How to use
+pip install -i https://test.pypi.org/simple/ wang==1.2.0
+
+from Lane_segmentation import inference
+inference.infer("/home/rogqigx171/Lane_segmentation/weights_1/ep_7_ls_0.021_0.570.pth","/home/rogqigx171/Lane_segmentation/data_list/test.csv","/home/rogqigx171/out")
+#inference.infer(weight_dir,test_csv_dir,output_dir)
