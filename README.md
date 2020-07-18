@@ -27,4 +27,5 @@ Cycle的分步学习率策略，ADAM作为优化器，训练8个EPOCH，以0.001
 SE-ResneXt101_32_4d weights: https://drive.google.com/file/d/18S5r0ipPa0AqZzl-dY0_NM8ui4SsEPAF/view?usp=sharing
 ### Example of Inference
 ![Image text](https://raw.githubusercontent.com/WangLi2019Gt/Lane_segmentation/master/img/170927_064216654_Camera_6.jpg）
+
 ![Image text](https://raw.githubusercontent.com/WangLi2019Gt/Lane_segmentation/master/img/170927_064216654_Camera_6_bin.png)
