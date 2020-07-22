@@ -1,10 +1,12 @@
 import torch
+from collections import OrderedDict
 import torch.nn as nn
 import math
 from torch.hub import load_state_dict_from_url
 import torch.utils.model_zoo as model_zoo
 import torch.nn.functional as F
-
+pretrained_model={'resneXt101_32_4d':'http://data.lip6.fr/cadene/pretrainedmodels/resnext101_32x4d-29e315fa.pth',
+        'se_resneXt101_32_4d':'http://data.lip6.fr/cadene/pretrainedmodels/se_resnext101_32x4d-3b2fe3d8.pth'}
 def conv1x1(in_planes, out_planes, stride=1):
     return nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride,
                      bias=False)  # ? Why no bias: 如果卷积层之后是BN层，那么可以不用偏置参数，可以节省内存
@@ -27,6 +29,23 @@ class SELayer(nn.Module):
         y = self.fc(y).view(b, c, 1, 1)
         return x * y.expand_as(x)
 
+class SEModule(nn.Module):
+    def __init__(self, channels, reduction=16):
+        super(SEModule, self).__init__()
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.fc1 = nn.Conv2d(channels, channels // reduction, kernel_size=1,padding=0)
+        self.relu = nn.ReLU(inplace=True)
+        self.fc2 = nn.Conv2d(channels // reduction, channels, kernel_size=1,padding=0)
+        self.sigmoid = nn.Sigmoid()
+    def forward(self, x):
+        module_input = x
+        x = self.avg_pool(x)
+        x = self.fc1(x)
+        x = self.relu(x)
+        x = self.fc2(x)
+        x = self.sigmoid(x)   
+        return module_input * x
+
 class SEBottleneck(nn.Module):
     expansion = 4
 
@@ -45,7 +64,7 @@ class SEBottleneck(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         self.se=SE
         if SE:
-            self.selayer=SELayer(planes*self.expansion)
+            self.se_module=SEModule(planes*self.expansion)
         self.downsample = downsample
         self.stride = stride
         self.dilation = dilation
@@ -64,7 +83,7 @@ class SEBottleneck(nn.Module):
         out = self.conv3(out)
         out = self.bn3(out)
         if self.se:
-            out=self.selayer(out)
+            out=self.se_module(out)
 
         if self.downsample is not None:
             identity = self.downsample(x)
@@ -92,10 +111,15 @@ class SEResNeXt(nn.Module):
         self.base_width=width_per_group
         self.groups=groups
         # conv1 in ppt figure
-        self.conv1 = nn.Conv2d(3, self.inplanes, kernel_size=7, stride=2, padding=3, bias=False)
-        self.bn1 = norm_layer(self.inplanes)
-        self.relu = nn.ReLU(inplace=True)
-        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+        layer0_modules = [('conv1', nn.Conv2d(3, self.inplanes, kernel_size=7, stride=2,padding=3, bias=False)),
+                ('bn1',  norm_layer(self.inplanes)),
+                ('relu1', nn.ReLU(inplace=True)),
+            ('pool', nn.MaxPool2d(3, stride=2,ceil_mode=True)) ]
+        #self.conv1 = nn.Conv2d(3, self.inplanes, kernel_size=7, stride=2, padding=3, bias=False)
+        #self.bn1 = norm_layer(self.inplanes)
+        #self.relu = nn.ReLU(inplace=True)
+        #self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+        self.layer0 = nn.Sequential(OrderedDict(layer0_modules))
         self.layer1 = self._make_layer(block, 64, layers[0], stride=strides[0], dilation=dilations[0])
         self.layer2 = self._make_layer(block, 128, layers[1], stride=strides[1], dilation=dilations[1])
         self.layer3 = self._make_layer(block, 256, layers[2], stride=strides[2], dilation=dilations[2])
@@ -152,11 +176,11 @@ class SEResNeXt(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
-        x = self.conv1(x)
-        x = self.bn1(x)
-        x = self.relu(x)
-        x = self.maxpool(x)
-
+       # x = self.conv1(x)
+        #x = self.bn1(x)
+        #x = self.relu(x)
+        #x = self.maxpool(x)
+        x = self.layer0(x)
         x = self.layer1(x)
         low_level_feat = x
         x = self.layer2(x)
@@ -179,12 +203,14 @@ def _resnet(arch, block, layers, output_stride, pretrained, progress, **kwargs):
 
     model = SEResNeXt(block, layers, output_stride, **kwargs)
     if pretrained:
-        pretrain_dict = model_zoo.load_url('http://data.lip6.fr/cadene/pretrainedmodels/resnext101_32x4d-29e315fa.pth')
+        pretrain_dict = model_zoo.load_url(pretrained_model[arch])
         model_dict = {}
         state_dict = model.state_dict()
         for k, v in pretrain_dict.items():
             if k in state_dict:
                 model_dict[k] = v
+            else:
+                print(k)
         state_dict.update(model_dict)
         model.load_state_dict(state_dict)
     return model
@@ -212,7 +238,7 @@ def SEresneXt101_32_4d(output_stride, pretrained=True, progress=True, **kwargs):
     kwargs['groups'] = 32
     kwargs['width_per_group'] = 4
     kwargs['SE'] = True
-    return _resnet('resneXt101_32_4d', SEBottleneck, [3, 4, 23, 3], output_stride, pretrained, progress,
+    return _resnet('se_resneXt101_32_4d', SEBottleneck, [3, 4, 23, 3], output_stride, pretrained, progress,
                    **kwargs)
 
 def SEresneXt101_32_4d_GN(output_stride, pretrained=True, progress=True, **kwargs):
