@@ -8,39 +8,32 @@ class ConfigTrain(object):
         self.DEVICE ='cuda:0'
         self.NET_NAME='deeplab'
         self.BACKBONE = net.se_resnext.SEresneXt101_32_4d(16)
-        self.WEIGHTS=None#'/home/rogqigx171/Lane_segmentation/weights_1/ep_7_ls_0.021_0.570.pth'
+        self.WEIGHTS='/home/rogqigx171/Lane_segmentation/weights_da/ep_1_ls_0.024_0.597.pth'
         self.IN_CHANNEL=3
         self.NUM_CLASSES = 8
         self.BASE_LR=0.001
         self.LR_STRATEGY = [
-            #[0.0005],  # epoch 0
-            #[0.0005],  # epoch 1
-            #[0.001],  # epoch 2
-            #[0.0005, 0.0003, 0.00015, 0.00005, 0.0002, 0.0003, 0.0004],  # epoch 3
-            #[0.0005, 0.0003, 0.00015, 0.00005, 0.0002, 0.0003, 0.0004],  # epoch 4
-            #[0.0005, 0.0003, 0.00015, 0.00005, 0.0002, 0.0003, 0.0004],  # epoch 5
-            #[0.0002, 0.00015, 0.0001, 0.00005, 0.0001, 0.00015, 0.0002],  # epoch 6
-            #[0.0002, 0.00015, 0.0001, 0.00005, 0.0001, 0.00015, 0.0002],  # epoch 7
             [0.001],  # epoch 0
             [0.001],  # epoch 1
             [0.001],  # epoch 2
             [0.001, 0.0006, 0.0003, 0.0001, 0.0004, 0.0008, 0.001],  # epoch 3
             [0.001, 0.0006, 0.0003, 0.0001, 0.0004, 0.0008, 0.001],  # epoch 4
-            [0.001, 0.0006, 0.0003, 0.0001, 0.0004, 0.0008, 0.001],  # epoch 5
+            #[0.001, 0.0006, 0.0003, 0.0001, 0.0004, 0.0008, 0.001],  # epoch 5
+            [0.0004, 0.0003, 0.0002, 0.0001, 0.0002, 0.0003, 0.0004],
             [0.0004, 0.0003, 0.0002, 0.0001, 0.0002, 0.0003, 0.0004],  # epoch 6
             [0.0004, 0.0003, 0.0002, 0.0001, 0.0002, 0.0003, 0.0004],  # epoch 7
             ]
         self.DATA_LIST_DIR='./data_list'
 
-        self.BATCH_SIZE=8#8,4,2
+        self.BATCH_SIZE=4#8,4,2
 
-        self.IMG_SIZE= (848, 256)#(1024, 384) #(1536, 512)
+        self.IMG_SIZE=(1272,384) #(848, 256)#(1024, 384) #(1536, 512)
         self.CROP_OFFSET=690
 
         self.LOG_DIR='./logs'
         self.EPOCH_BEGIN=0
         self.EPOCH_NUM=7
-        self.SAVE_DIR='./weights_new'
+        self.SAVE_DIR='./weights_da2'
 
 class ConfigTest(object):
     def __init__(self):

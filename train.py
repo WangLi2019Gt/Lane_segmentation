@@ -13,7 +13,11 @@ if __name__ == '__main__':
 
     print("Net: ", cfg.NET_NAME)
     #net = utils.create_net(cfg.IN_CHANNEL, cfg.NUM_CLASSES, cfg.NET_NAME).cuda()
-    net = utils.create_net(cfg.IN_CHANNEL, cfg.NUM_CLASSES, cfg.NET_NAME, cfg.BACKBONE).to(device)
+    net = utils.create_net(cfg.IN_CHANNEL, cfg.NUM_CLASSES, cfg.NET_NAME, cfg.BACKBONE)
+    if torch.cuda.device_count() > 1:     
+        print("multi GPUS")
+        net = torch.nn.DataParallel(net,device_ids=[0,1])
+    net=net.to(device)
     if cfg.WEIGHTS:
         print('load weights from: ', cfg.WEIGHTS)
         net.load_state_dict(torch.load(cfg.WEIGHTS))

@@ -5,6 +5,8 @@ from net.se_resnext import resneXt101_32_8d, SEresneXt101_32_4d
 from torch.hub import load_state_dict_from_url
 import torch.utils.model_zoo as model_zoo
 import torch.nn.functional as F
+from net.attention import PAM_Module,CAM_Module
+from net.se_attention import csSE
 
 def conv3x3(in_planes, out_planes, stride=1, padding=1):
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=padding, bias=False)  # ? Why no bias
@@ -263,6 +265,7 @@ class Decoder(nn.Module):
                                        BatchNorm(256),
                                        nn.ReLU(),
                                        nn.Dropout(0.5),
+                                       csSE(256),
                                        nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1, bias=False),
                                        BatchNorm(256),
                                        nn.ReLU(),
@@ -291,7 +294,7 @@ class Decoder(nn.Module):
 
 
 class DeepLab(nn.Module):
-    def __init__(self, backbone=resnet101(16), output_stride=16, num_classes=21,
+    def __init__(self, backbone=resnet101(16), output_stride=16, num_classes=8,
                  sync_bn=False, freeze_bn=False):
         super(DeepLab, self).__init__()
 
@@ -300,7 +303,6 @@ class DeepLab(nn.Module):
         self.backbone = backbone
         self.aspp = ASPP(output_stride, BatchNorm)
         self.decoder = Decoder(num_classes, BatchNorm)
-
     def forward(self, input):
         x, low_level_feat = self.backbone(input)
         x = self.aspp(x)
